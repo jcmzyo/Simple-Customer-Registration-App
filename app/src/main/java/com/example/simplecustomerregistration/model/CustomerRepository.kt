@@ -9,7 +9,6 @@ class CustomerRepository(
 ) {
     fun getAllCustomers(): LiveData<List<Customer>> {
         val ret = customerDao.getAllCustomers()
-        println("getAllCustomers(): ${ret.value?.size}")
         return ret
     }
 
@@ -22,7 +21,7 @@ class CustomerRepository(
     suspend fun updateCustomer(
         customer: Customer
     ) {
-        val id = customerDao.updateCustomer(customer)
+        customerDao.updateCustomer(customer)
     }
 
     suspend fun deleteCustomer(
