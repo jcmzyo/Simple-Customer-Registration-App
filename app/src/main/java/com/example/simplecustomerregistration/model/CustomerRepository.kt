@@ -3,25 +3,31 @@ package com.example.simplecustomerregistration.model
 import androidx.lifecycle.LiveData
 import com.example.simplecustomerregistration.data.Customer
 
+
 class CustomerRepository(
-    private val customerDao: CustomerDao
+    private val customerDao: CustomerDao,
 ) {
-    suspend fun addCustomer(
-        fn: String = "",
-        ln: String = "",
-        mn: String = "",
-        a: String = "",
-        p: String = "") {
-        customerDao.addCustomer(Customer(
-            firstName = fn,
-            lastName = ln,
-            mobileNumber = mn,
-            address = a,
-            photo = p
-        ))
+    fun getAllCustomers(): LiveData<List<Customer>> {
+        val ret = customerDao.getAllCustomers()
+        println("getAllCustomers(): ${ret.value?.size}")
+        return ret
     }
 
-    fun getAllCustomers(): LiveData<List<Customer>> {
-        return customerDao.getAllCustomers()
+    suspend fun addCustomer(
+        customer: Customer
+    ) {
+        customerDao.addCustomer(customer)
+    }
+
+    suspend fun updateCustomer(
+        customer: Customer
+    ) {
+        val id = customerDao.updateCustomer(customer)
+    }
+
+    suspend fun deleteCustomer(
+        customer: Customer
+    ) {
+        customerDao.deleteCustomer(customer)
     }
 }

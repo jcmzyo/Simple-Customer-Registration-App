@@ -1,15 +1,17 @@
 package com.example.simplecustomerregistration.viewmodel
 
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.lifecycle.ViewModel
+import com.example.simplecustomerregistration.constants.CONSTANTS
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-class LoginViewModel: ViewModel() {
-    private val _username = mutableStateOf("")
+class LoginViewModel : ViewModel() {
+    private val _usernameState = MutableStateFlow(TextFieldState())
+    val usernameState = _usernameState.asStateFlow()
 
-    private val _password = mutableStateOf("")
+    private val _passwordState = MutableStateFlow(TextFieldState())
+    val passwordState = _passwordState.asStateFlow()
 
     private val _isCredentialsCorrect = MutableStateFlow(false)
     val isCredentialsCorrect = _isCredentialsCorrect.asStateFlow()
@@ -22,21 +24,6 @@ class LoginViewModel: ViewModel() {
     val isPasswordHidden = _isPasswordHidden.asStateFlow()
 
 
-    fun getUsername(): String{
-        return _username.value
-    }
-
-    fun getPassword(): String{
-        return _password.value
-    }
-    fun updateUsername(t: String) {
-        _username.value = t
-    }
-
-    fun updatePassword(t: String) {
-        _password.value = t
-    }
-
     fun getErrorString(): String {
         return errorString.value
     }
@@ -45,17 +32,14 @@ class LoginViewModel: ViewModel() {
         _isPasswordHidden.value = b
     }
 
-    fun validateCredentials(){
-        if(getUsername().isEmpty()){
-            _errorString.value = "Username must not be empty."
-        }
-        else if(getPassword().isEmpty()){
-            _errorString.value = "Password must not be empty."
-        }
-        else if(getUsername() != "juandelacruz@gmail.com" || getPassword() != "jcruz@2026"){
-            _errorString.value = "Invalid Credentials."
-        }
-        else{
+    fun validateCredentials() {
+        if (_usernameState.value.text.isEmpty()) {
+            _errorString.value = CONSTANTS.ERROR_STRING_USERNAME_EMPTY
+        } else if (_passwordState.value.text.isEmpty()) {
+            _errorString.value = CONSTANTS.ERROR_STRING_PASSWORD_EMPTY
+        } else if (_usernameState.value.text != CONSTANTS.TEST_USERNAME || _passwordState.value.text != CONSTANTS.TEST_PASSWORD) {
+            _errorString.value = CONSTANTS.ERROR_STRING_INVALID_CREDENTIALS
+        } else {
             _errorString.value = ""
             _isCredentialsCorrect.value = true
         }

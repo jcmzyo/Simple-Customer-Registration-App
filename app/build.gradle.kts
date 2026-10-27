@@ -43,6 +43,7 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.runtime.livedata)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
@@ -62,4 +63,15 @@ dependencies {
 
     implementation("androidx.room3:room3-runtime:$roomVersion")
     ksp("androidx.room3:room3-compiler:$roomVersion")
+    implementation("com.google.android.gms:play-services-base:18.11.1")
+    val appcompat_version = "1.8.0"
+
+    implementation("androidx.appcompat:appcompat:$appcompat_version")
+    implementation("androidx.appcompat:appcompat-resources:$appcompat_version")
+
+    implementation(platform("androidx.compose:compose-bom:2026.09.00"))
+    implementation("com.github.bumptech.glide:compose:1.0.0-beta01")
+
+
+
 }

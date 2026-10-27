@@ -4,18 +4,17 @@ import android.content.Context
 import androidx.room3.Database
 import androidx.room3.Room
 import androidx.room3.RoomDatabase
+import com.example.simplecustomerregistration.constants.CONSTANTS
 import com.example.simplecustomerregistration.data.Customer
 
 @Database(
-    entities = [Customer::class],
-    version = 1,
-    exportSchema = true
+    entities = [Customer::class], version = 1, exportSchema = true
 )
 abstract class CustomerDatabase : RoomDatabase() {
+
     abstract fun getDAO(): CustomerDao
 
-    companion object
-    {
+    companion object {
         @Volatile
         private var INSTANCE: CustomerDatabase? = null
 
@@ -27,11 +26,9 @@ abstract class CustomerDatabase : RoomDatabase() {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
                     CustomerDatabase::class.java,
-                    "Customer"
-                )
-                    .build()
+                    CONSTANTS.CUSTOMER_TABLE_NAME
+                ).build()
                 INSTANCE = instance
-                // return instance
                 instance
             }
         }

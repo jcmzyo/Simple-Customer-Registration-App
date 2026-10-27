@@ -17,24 +17,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedSecureTextField
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-
+import com.example.simplecustomerregistration.constants.CONSTANTS
 import com.example.simplecustomerregistration.ui.theme.SimpleCustomerRegistrationTheme
 import com.example.simplecustomerregistration.viewmodel.LoginViewModel
 
@@ -50,18 +49,18 @@ class LoginActivity : ComponentActivity() {
             SimpleCustomerRegistrationTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize()
-                ){
-                    val isCredentialsCorrectState = loginViewModel.isCredentialsCorrect.collectAsStateWithLifecycle()
+                ) {
+                    val isCredentialsCorrectState =
+                        loginViewModel.isCredentialsCorrect.collectAsStateWithLifecycle()
                     val isCredentialsCorrect = isCredentialsCorrectState.value
                     val errorStringState = loginViewModel.errorString.collectAsStateWithLifecycle()
                     val errorString = errorStringState.value
-                    val isPasswordHiddenState = loginViewModel.isPasswordHidden.collectAsStateWithLifecycle()
-                    val isPasswordHidden= isPasswordHiddenState.value
+                    val isPasswordHiddenState =
+                        loginViewModel.isPasswordHidden.collectAsStateWithLifecycle()
+                    val isPasswordHidden = isPasswordHiddenState.value
                     LoginScreen(
-                        { loginViewModel.getUsername() },
-                        { loginViewModel.updateUsername(it) },
-                        { loginViewModel.getPassword() },
-                        { loginViewModel.updatePassword(it) },
+                        loginViewModel.usernameState.collectAsStateWithLifecycle().value,
+                        loginViewModel.passwordState.collectAsStateWithLifecycle().value,
                         { loginViewModel.validateCredentials() },
                         { loginViewModel.getErrorString() },
                         { loginViewModel.updateIsPasswordHidden(it) },
@@ -75,58 +74,57 @@ class LoginActivity : ComponentActivity() {
     }
 }
 
-fun startCustomerListActivity(context: Context){
+fun startCustomerListActivity(context: Context) {
     context.startActivity(Intent(context, CustomerListActivity::class.java))
 }
 
 @Composable
 fun LoginScreen(
-    getUsername: () -> String,
-    updateUsername: (String) -> Unit,
-    getPassword: () -> String,
-    updatePassword: (String) -> Unit,
+    usernameState: TextFieldState,
+    passwordState: TextFieldState,
     validateCredentials: () -> Unit,
     getErrorString: () -> String,
     updateIsPasswordHidden: (Boolean) -> Unit,
     isCredentialsCorrect: Boolean,
     errorString: String,
     isPasswordHidden: Boolean
-){
+) {
     val context = LocalContext.current
 
-    if (isCredentialsCorrect){
+    if (isCredentialsCorrect) {
         startCustomerListActivity(context)
     }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
+            .padding(CONSTANTS.DP_BIG_SPACING),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
-        Text(text = "Login")
+        Text(text = CONSTANTS.TITLE_STRING_APP_NAME)
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(CONSTANTS.DP_BIG_SPACING))
 
-        UsernameTextField(getUsername()) { updateUsername(it) }
+        UsernameTextField(usernameState)
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(CONSTANTS.DP_BIG_SPACING))
 
-        PasswordTextField(getPassword(), isPasswordHidden) { updatePassword(it) }
+        PasswordTextField(passwordState, isPasswordHidden)
 
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(CONSTANTS.DP_BIG_SPACING))
 
-        if (!isCredentialsCorrect && errorString.isNotBlank()){
+        if (!isCredentialsCorrect && errorString.isNotBlank()) {
             Box(
+                contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .fillMaxWidth(1f)
-                    .padding(5.dp)
-                    .background(Color.Red)
-            ){
+                    .padding(CONSTANTS.DP_PADDING)
+                    .background(MaterialTheme.colorScheme.errorContainer)
+            ) {
                 Text(
-                    text = getErrorString()
+                    text = getErrorString(), color = MaterialTheme.colorScheme.onErrorContainer
                 )
             }
         }
@@ -135,31 +133,26 @@ fun LoginScreen(
             modifier = Modifier
                 .wrapContentSize()
                 .fillMaxWidth()
-                .padding(5.dp),
+                .padding(CONSTANTS.DP_PADDING),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Start,
-        ){
+        ) {
             Checkbox(
-                checked = isPasswordHidden,
-                onCheckedChange = { updateIsPasswordHidden(it) },
-                modifier = Modifier
-                    .size(16.dp)
-            )
+                checked = isPasswordHidden, onCheckedChange = { updateIsPasswordHidden(it) })
 
-            Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(CONSTANTS.DP_MEDIUM_SPACING))
 
             Text(
-                text = "Hide Password"
+                text = CONSTANTS.TEXT_STRING_HIDE_PASSWORD
             )
         }
 
         Button(
             onClick = {
                 validateCredentials()
-            },
-            modifier = Modifier
+            }, modifier = Modifier
                 .fillMaxWidth(1f)
-                .padding(5.dp)
+                .padding(CONSTANTS.DP_PADDING)
         ) {
             Text("Log In")
         }
@@ -169,36 +162,35 @@ fun LoginScreen(
 
 @Composable
 fun UsernameTextField(
-    username: String,
-    updateUsername: (String) -> Unit,
-){
-    TextField(
-        value = username,
-        onValueChange = updateUsername,
-        maxLines = 1,
+    usernameState: TextFieldState
+) {
+    OutlinedTextField(
+        state = usernameState,
+        lineLimits = TextFieldLineLimits.SingleLine,
         modifier = Modifier
             .fillMaxWidth(1f)
-            .padding(5.dp),
-        placeholder = { Text(text = "Enter Username") },
-        label = { Text("Username") }
-    )
+            .padding(CONSTANTS.DP_PADDING),
+        label = { Text(CONSTANTS.TEXT_STRING_USER_NAME) })
 }
 
 @Composable
 fun PasswordTextField(
-    password: String,
-    isPasswordHidden: Boolean,
-    updatePassword: (String) -> Unit,
-){
-    TextField(
-        value = password,
-        onValueChange = updatePassword,
-        maxLines = 1,
-        modifier = Modifier
-            .fillMaxWidth(1f)
-            .padding(5.dp),
-        visualTransformation = if (isPasswordHidden) PasswordVisualTransformation() else VisualTransformation.None,
-        placeholder = { Text(text = "Enter Password") },
-        label = { Text("Password") }
-    )
+    passwordState: TextFieldState, isPasswordHidden: Boolean
+) {
+    if (isPasswordHidden) {
+        OutlinedSecureTextField(
+            state = passwordState,
+            modifier = Modifier
+                .fillMaxWidth(1f)
+                .padding(CONSTANTS.DP_PADDING),
+            label = { Text(CONSTANTS.TEXT_STRING_PASSWORD) })
+    } else {
+        OutlinedTextField(
+            state = passwordState,
+            lineLimits = TextFieldLineLimits.SingleLine,
+            modifier = Modifier
+                .fillMaxWidth(1f)
+                .padding(CONSTANTS.DP_PADDING),
+            label = { Text(CONSTANTS.TEXT_STRING_PASSWORD) })
+    }
 }

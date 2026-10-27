@@ -14,7 +14,7 @@ import com.example.simplecustomerregistration.data.Customer
 @DaoReturnTypeConverters(LiveDataDaoReturnTypeConverter::class)
 interface CustomerDao {
     @Insert
-    suspend fun addCustomer(customer: Customer)
+    suspend fun addCustomer(customer: Customer): Long
 
     @Query("SELECT * FROM Customer ORDER BY id DESC")
     fun getAllCustomers(): LiveData<List<Customer>>
